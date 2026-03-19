@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { loginUser } from "../api/auth";
+import "./LoginPage.css";
 
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -11,10 +12,9 @@ function LoginPage({ onLogin }) {
 
     try {
       const response = await loginUser({ email, password });
-
       const token = response.data.token;
-      localStorage.setItem("token", token);
 
+      localStorage.setItem("token", token);
       setMessage("Login successful");
       onLogin(token);
     } catch (error) {
@@ -24,35 +24,51 @@ function LoginPage({ onLogin }) {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email</label>
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <div className="login-page">
+      <div className="login-card">
+        <div className="login-header">
+          <h2>MiniCanvas</h2>
+          <p>Login to your account</p>
         </div>
 
-        <div>
-          <label>Password</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="input-group">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-        <br />
-        <button type="submit">Login</button>
-      </form>
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-      <p>{message}</p>
+          {message && (
+            <p
+              className={
+                message === "Login successful"
+                  ? "message success-message"
+                  : "message error-message"
+              }
+            >
+              {message}
+            </p>
+          )}
+
+          <button type="submit" className="login-button">
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
