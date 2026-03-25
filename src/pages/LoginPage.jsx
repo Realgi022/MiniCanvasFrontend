@@ -7,21 +7,27 @@ function LoginPage({ onLogin }) {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      const response = await loginUser({ email, password });
-      const token = response.data.token;
+  try {
+    const response = await loginUser({ email, password });
 
-      localStorage.setItem("token", token);
-      setMessage("Login successful");
-      onLogin(token);
-    } catch (error) {
-      console.error(error);
-      setMessage("Login failed");
-    }
-  };
+    const token = response.data.token;
+    const roles = response.data.roles;
+    const returnedEmail = response.data.email;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("roles", JSON.stringify(roles));
+    localStorage.setItem("email", returnedEmail);
+
+    setMessage("Login successful");
+    onLogin(token, roles);
+  } catch (error) {
+    console.error(error);
+    setMessage("Login failed");
+  }
+};
 
   return (
     <div className="login-page">
