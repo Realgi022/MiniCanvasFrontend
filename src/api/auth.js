@@ -1,8 +1,4 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "/api",
-});
+import API from "./client";
 
 export const loginUser = async (credentials) => {
   return API.post("/auth/login", credentials);
