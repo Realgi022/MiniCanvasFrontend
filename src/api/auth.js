@@ -9,7 +9,7 @@ export const registerUser = async (userData) => {
 };
 
 export const getMe = async (token) => {
-  return API.get("/auth/me", {
+  return API.get("/me", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
