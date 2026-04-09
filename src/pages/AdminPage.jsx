@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createUser } from "../api/admin";
+import { useEffect, useState } from "react";
+import { createUser, getAllUsers, updateUserRole } from "../api/admin";
 
 function AdminPage({ onLogout }) {
   const email = localStorage.getItem("email");
@@ -13,6 +13,9 @@ function AdminPage({ onLogout }) {
   });
 
   const [message, setMessage] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [updatingUserId, setUpdatingUserId] = useState(null);
 
   const handleChange = (e) => {
     setForm({
@@ -20,6 +23,29 @@ function AdminPage({ onLogout }) {
       [e.target.name]: e.target.value,
     });
   };
+
+  const loadUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const response = await getAllUsers();
+
+      const usersWithSelectedRole = response.data.map((user) => ({
+        ...user,
+        selectedRole: user.role,
+      }));
+
+      setUsers(usersWithSelectedRole);
+    } catch (error) {
+      console.error(error);
+      setMessage("Failed to load users");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,9 +60,33 @@ function AdminPage({ onLogout }) {
         fullName: "",
         role: "STUDENT",
       });
+
+      await loadUsers();
     } catch (error) {
       console.error(error);
       setMessage(error.response?.data?.error || "Failed to create user");
+    }
+  };
+
+  const handleRoleSelectChange = (id, value) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === id ? { ...user, selectedRole: value } : user
+      )
+    );
+  };
+
+  const handleUpdateRole = async (id, role) => {
+    try {
+      setUpdatingUserId(id);
+      await updateUserRole(id, role);
+      setMessage("User role updated successfully");
+      await loadUsers();
+    } catch (error) {
+      console.error(error);
+      setMessage(error.response?.data?.error || "Failed to update role");
+    } finally {
+      setUpdatingUserId(null);
     }
   };
 
@@ -72,6 +122,7 @@ function AdminPage({ onLogout }) {
           display: "flex",
           flexDirection: "column",
           gap: "12px",
+          marginBottom: "40px",
         }}
       >
         <input
@@ -80,7 +131,11 @@ function AdminPage({ onLogout }) {
           placeholder="Full name"
           value={form.fullName}
           onChange={handleChange}
-          style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc" }}
+          style={{
+            padding: "10px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
         />
 
         <input
@@ -89,7 +144,11 @@ function AdminPage({ onLogout }) {
           placeholder="Email"
           value={form.email}
           onChange={handleChange}
-          style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc" }}
+          style={{
+            padding: "10px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
         />
 
         <input
@@ -98,14 +157,22 @@ function AdminPage({ onLogout }) {
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
-          style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc" }}
+          style={{
+            padding: "10px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
         />
 
         <select
           name="role"
           value={form.role}
           onChange={handleChange}
-          style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc" }}
+          style={{
+            padding: "10px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
         >
           <option value="STUDENT">STUDENT</option>
           <option value="TEACHER">TEACHER</option>
@@ -127,10 +194,84 @@ function AdminPage({ onLogout }) {
         </button>
       </form>
 
-      {message && (
-        <p style={{ marginTop: "16px" }}>
-          {message}
-        </p>
+      {message && <p style={{ marginBottom: "20px" }}>{message}</p>}
+
+      <h2>User List</h2>
+
+      {loadingUsers ? (
+        <p>Loading users...</p>
+      ) : users.length === 0 ? (
+        <p>No users found.</p>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              background: "white",
+              color: "black",
+              borderRadius: "8px",
+              overflow: "hidden",
+            }}
+          >
+            <thead>
+              <tr style={{ background: "#e5e7eb" }}>
+                <th style={{ padding: "12px", textAlign: "left" }}>ID</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Full Name</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Email</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Current Role</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Change Role</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} style={{ borderTop: "1px solid #ddd" }}>
+                  <td style={{ padding: "12px" }}>{user.id}</td>
+                  <td style={{ padding: "12px" }}>{user.fullName}</td>
+                  <td style={{ padding: "12px" }}>{user.email}</td>
+                  <td style={{ padding: "12px" }}>{user.role}</td>
+                  <td style={{ padding: "12px" }}>
+                    <select
+                      value={user.selectedRole}
+                      onChange={(e) =>
+                        handleRoleSelectChange(user.id, e.target.value)
+                      }
+                      style={{
+                        padding: "8px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                      }}
+                    >
+                      <option value="STUDENT">STUDENT</option>
+                      <option value="TEACHER">TEACHER</option>
+                    </select>
+                  </td>
+                  <td style={{ padding: "12px" }}>
+                    <button
+                      onClick={() =>
+                        handleUpdateRole(user.id, user.selectedRole)
+                      }
+                      disabled={updatingUserId === user.id}
+                      style={{
+                        padding: "8px 14px",
+                        border: "none",
+                        borderRadius: "6px",
+                        background: "#16a34a",
+                        color: "white",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        opacity: updatingUserId === user.id ? 0.7 : 1,
+                      }}
+                    >
+                      {updatingUserId === user.id ? "Updating..." : "Update"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
