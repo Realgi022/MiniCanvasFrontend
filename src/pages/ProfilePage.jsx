@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getMe } from "../api/auth";
+import AiBotPage from "./AiBotPage";
 import "./ProfilePage.css";
+
 
 function ProfilePage({ token, onLogout }) {
   const [user, setUser] = useState(null);
@@ -36,7 +38,7 @@ function ProfilePage({ token, onLogout }) {
     "Class/People",
     "Assignments",
     "Grading",
-    "ComingSoon AI Bot",
+    "AI Study Bot",
   ];
 
   const email = user?.email || localStorage.getItem("email");
@@ -121,12 +123,7 @@ function ProfilePage({ token, onLogout }) {
             </>
           )}
 
-          {activeItem === "ComingSoon AI Bot" && (
-            <>
-              <h3>AI Bot</h3>
-              <p>This feature is coming soon.</p>
-            </>
-          )}
+          {activeItem === "AI Study Bot" && <AiBotPage />}
         </div>
       </main>
     </div>
