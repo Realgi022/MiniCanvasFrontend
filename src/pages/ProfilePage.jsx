@@ -15,6 +15,7 @@ import {
   removeUserFromClass,
 } from "../api/classes";
 import AiBotPage from "./AiBotPage";
+import AssignmentsSection from "./AssignmentsSection";
 import "./ProfilePage.css";
 
 function ProfilePage({ token, onLogout }) {
@@ -613,10 +614,7 @@ function ProfilePage({ token, onLogout }) {
           )}
 
           {activeItem === "Assignments" && (
-            <>
-              <h3>Assignments</h3>
-              <p>Current and upcoming assignments will appear here.</p>
-            </>
+            <AssignmentsSection isTeacher={isTeacher} />
           )}
 
           {activeItem === "Grading" && (
