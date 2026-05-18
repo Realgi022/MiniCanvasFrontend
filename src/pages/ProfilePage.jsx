@@ -16,6 +16,7 @@ import {
 } from "../api/classes";
 import AiBotPage from "./AiBotPage";
 import AssignmentsSection from "./AssignmentsSection";
+import GradingSection from "./GradingSection";
 import "./ProfilePage.css";
 
 function ProfilePage({ token, onLogout }) {
@@ -618,10 +619,7 @@ function ProfilePage({ token, onLogout }) {
           )}
 
           {activeItem === "Grading" && (
-            <>
-              <h3>Grading</h3>
-              <p>Your grades, feedback, and progress will be shown here.</p>
-            </>
+            <GradingSection isTeacher={isTeacher} />
           )}
 
           {activeItem === "AI Study Bot" && <AiBotPage />}

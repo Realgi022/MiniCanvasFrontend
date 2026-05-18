@@ -75,3 +75,14 @@ export const getSubmissionDownloadBlob = async (submissionId) => {
     responseType: "blob",
   });
 };
+
+export const gradeSubmission = async (submissionId, gradeData) => {
+  const token = localStorage.getItem("token");
+
+  return API.put(`/assignments/submissions/${submissionId}/grade`, gradeData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+};
