@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMe } from "../api/auth";
 import {
-  getAnnouncements,
-  createAnnouncement,
-  updateAnnouncement,
-  deleteAnnouncement,
-} from "../api/announcements";
-import {
   getMyClasses,
   getAllClasses,
   getClassMembers,
@@ -15,6 +9,7 @@ import {
   removeUserFromClass,
 } from "../api/classes";
 import AiBotPage from "./AiBotPage";
+import AnnouncementsSection from "./AnnouncementsSection";
 import AssignmentsSection from "./AssignmentsSection";
 import GradingSection from "./GradingSection";
 import "./ProfilePage.css";
@@ -24,16 +19,6 @@ function ProfilePage({ token, onLogout }) {
   const [message, setMessage] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeItem, setActiveItem] = useState("Announcements");
-
-  const [announcements, setAnnouncements] = useState([]);
-  const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
-
-  const [announcementForm, setAnnouncementForm] = useState({
-    title: "",
-    content: "",
-  });
-
-  const [editingId, setEditingId] = useState(null);
 
   const [myClasses, setMyClasses] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -69,19 +54,6 @@ function ProfilePage({ token, onLogout }) {
     user?.roles || JSON.parse(localStorage.getItem("roles") || "[]");
 
   const isTeacher = Array.isArray(roles) && roles.includes("TEACHER");
-
-  const loadAnnouncements = async () => {
-    try {
-      setLoadingAnnouncements(true);
-      const response = await getAnnouncements();
-      setAnnouncements(response.data);
-    } catch (error) {
-      console.error(error);
-      setMessage("Failed to load announcements");
-    } finally {
-      setLoadingAnnouncements(false);
-    }
-  };
 
   const loadClassPeople = async () => {
     try {
@@ -124,10 +96,6 @@ function ProfilePage({ token, onLogout }) {
   };
 
   useEffect(() => {
-    if (token && activeItem === "Announcements") {
-      loadAnnouncements();
-    }
-
     if (token && activeItem === "Class/People") {
       loadClassPeople();
     }
@@ -151,81 +119,13 @@ function ProfilePage({ token, onLogout }) {
   const handleMenuClick = (item) => {
     setActiveItem(item);
     setMessage("");
-
-    if (item !== "Announcements") {
-      setEditingId(null);
-      setAnnouncementForm({
-        title: "",
-        content: "",
-      });
-    }
-  };
-
-  const handleAnnouncementChange = (e) => {
-    setAnnouncementForm({
-      ...announcementForm,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const resetAnnouncementForm = () => {
-    setAnnouncementForm({
-      title: "",
-      content: "",
-    });
-    setEditingId(null);
-  };
-
-  const handleAnnouncementSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      if (editingId) {
-        await updateAnnouncement(editingId, announcementForm);
-        setMessage("Announcement updated successfully");
-      } else {
-        await createAnnouncement(announcementForm);
-        setMessage("Announcement created successfully");
-      }
-
-      resetAnnouncementForm();
-      await loadAnnouncements();
-    } catch (error) {
-      console.error(error);
-      setMessage(error.response?.data?.error || "Failed to save announcement");
-    }
-  };
-
-  const handleEditAnnouncement = (announcement) => {
-    setMessage("");
-    setEditingId(announcement.id);
-    setAnnouncementForm({
-      title: announcement.title,
-      content: announcement.content,
-    });
-  };
-
-  const handleDeleteAnnouncement = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this announcement?"
-    );
-
-    if (!confirmed) return;
-
-    try {
-      await deleteAnnouncement(id);
-      setMessage("Announcement deleted successfully");
-      await loadAnnouncements();
-    } catch (error) {
-      console.error(error);
-      setMessage(error.response?.data?.error || "Failed to delete announcement");
-    }
   };
 
   const handleClassSelectChange = async (e) => {
     const classId = e.target.value;
 
     setSelectedClassId(classId);
+
     setAssignForm((prev) => ({
       ...prev,
       classId: classId,
@@ -347,101 +247,13 @@ function ProfilePage({ token, onLogout }) {
           <span>{isTeacher ? "Teacher side" : "Student side"}</span>
         </div>
 
-        {message &&
-          (activeItem === "Announcements" || activeItem === "Class/People") && (
-            <p className="student-error">{message}</p>
-          )}
+        {message && activeItem === "Class/People" && (
+          <p className="student-error">{message}</p>
+        )}
 
         <div className="student-content-box">
           {activeItem === "Announcements" && (
-            <>
-              <h3>Announcements</h3>
-              <p>
-                Important announcements from teachers and the school will appear
-                here.
-              </p>
-
-              {isTeacher && (
-                <form
-                  className="announcement-form"
-                  onSubmit={handleAnnouncementSubmit}
-                >
-                  <h4>
-                    {editingId ? "Edit announcement" : "Create announcement"}
-                  </h4>
-
-                  <input
-                    type="text"
-                    name="title"
-                    placeholder="Announcement title"
-                    value={announcementForm.title}
-                    onChange={handleAnnouncementChange}
-                  />
-
-                  <textarea
-                    name="content"
-                    placeholder="Announcement content"
-                    value={announcementForm.content}
-                    onChange={handleAnnouncementChange}
-                    rows="4"
-                  />
-
-                  <div className="announcement-form-buttons">
-                    <button type="submit">
-                      {editingId ? "Update" : "Create"}
-                    </button>
-
-                    {editingId && (
-                      <button type="button" onClick={resetAnnouncementForm}>
-                        Cancel
-                      </button>
-                    )}
-                  </div>
-                </form>
-              )}
-
-              {loadingAnnouncements ? (
-                <p>Loading announcements...</p>
-              ) : announcements.length === 0 ? (
-                <p>No announcements yet.</p>
-              ) : (
-                <div className="announcement-list">
-                  {announcements.map((announcement) => (
-                    <div className="announcement-card" key={announcement.id}>
-                      <h4>{announcement.title}</h4>
-                      <p>{announcement.content}</p>
-
-                      <small>
-                        Posted by{" "}
-                        {announcement.createdByName ||
-                          announcement.createdByEmail}
-                      </small>
-
-                      {isTeacher && (
-                        <div className="announcement-actions">
-                          <button
-                            onClick={() =>
-                              handleEditAnnouncement(announcement)
-                            }
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            className="delete-announcement-button"
-                            onClick={() =>
-                              handleDeleteAnnouncement(announcement.id)
-                            }
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
+            <AnnouncementsSection isTeacher={isTeacher} />
           )}
 
           {activeItem === "Class/People" && (
@@ -618,9 +430,7 @@ function ProfilePage({ token, onLogout }) {
             <AssignmentsSection isTeacher={isTeacher} />
           )}
 
-          {activeItem === "Grading" && (
-            <GradingSection isTeacher={isTeacher} />
-          )}
+          {activeItem === "Grading" && <GradingSection isTeacher={isTeacher} />}
 
           {activeItem === "AI Study Bot" && <AiBotPage />}
         </div>
