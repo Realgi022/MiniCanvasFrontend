@@ -1,0 +1,198 @@
+.assignment-teacher-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.assignment-panel {
+  background: white;
+  color: #020617;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assignment-panel h4 {
+  margin: 0;
+}
+
+.assignment-panel input,
+.assignment-panel textarea,
+.assignment-panel select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.assignment-panel button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.assignment-list {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.assignment-card {
+  background: white;
+  color: #020617;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 18px;
+  cursor: pointer;
+}
+
+.assignment-card.selected {
+  border: 2px solid #2563eb;
+  background: #eff6ff;
+}
+
+.assignment-card h4 {
+  margin: 0 0 8px 0;
+}
+
+.assignment-card p {
+  margin: 0 0 12px 0;
+}
+
+.assignment-card small {
+  color: #475569;
+}
+
+.assignment-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.assignment-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.assignment-status.submitted {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.assignment-status.not-submitted {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.student-submit-box {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.student-submit-box input,
+.student-submit-box textarea {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-family: inherit;
+}
+
+.student-submit-box button {
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.submission-section {
+  margin-top: 28px;
+  background: white;
+  color: #020617;
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid #d1d5db;
+}
+
+.submission-filter-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.submission-filter-form input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+
+.submission-filter-form button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.assignment-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  color: #020617;
+}
+
+.assignment-table th,
+.assignment-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.assignment-table th {
+  background: #f8fafc;
+}
+
+.assignment-table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.assignment-table-actions button {
+  padding: 7px 10px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .assignment-teacher-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .submission-filter-form {
+    flex-direction: column;
+  }
+}

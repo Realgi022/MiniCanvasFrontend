@@ -9,6 +9,7 @@ import {
   getSubmissionPreviewBlob,
   getSubmissionDownloadBlob,
 } from "../api/assignments";
+import "./AssignmentsSection.css";
 
 function AssignmentsSection({ isTeacher }) {
   const [message, setMessage] = useState("");

@@ -6,6 +6,7 @@ import {
   gradeSubmission,
 } from "../api/assignments";
 import { getMyGrades } from "../api/grades";
+import "./GradingSection.css";
 
 function GradingSection({ isTeacher }) {
   const [message, setMessage] = useState("");

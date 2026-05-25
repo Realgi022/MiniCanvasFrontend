@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createUser, getAllUsers, updateUserRole } from "../api/admin";
+import "./AdminPage.css";
 
 function AdminPage({ onLogout }) {
   const email = localStorage.getItem("email");
@@ -91,188 +92,115 @@ function AdminPage({ onLogout }) {
   };
 
   return (
-    <div style={{ padding: "30px", color: "white" }}>
-      <h1>Admin Page</h1>
-      <p>Logged in as: {email}</p>
-      <p>Roles: {roles.join(", ")}</p>
-
-      <button
-        onClick={onLogout}
-        style={{
-          marginTop: "10px",
-          marginBottom: "30px",
-          padding: "10px 18px",
-          border: "none",
-          borderRadius: "8px",
-          background: "#dc2626",
-          color: "white",
-          cursor: "pointer",
-          fontWeight: "bold",
-        }}
-      >
-        Logout
-      </button>
-
-      <h2>Create User</h2>
-
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          maxWidth: "400px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-          marginBottom: "40px",
-        }}
-      >
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Full name"
-          value={form.fullName}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        />
-
-        <select
-          name="role"
-          value={form.role}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        >
-          <option value="STUDENT">STUDENT</option>
-          <option value="TEACHER">TEACHER</option>
-        </select>
-
-        <button
-          type="submit"
-          style={{
-            padding: "12px",
-            border: "none",
-            borderRadius: "8px",
-            background: "#2563eb",
-            color: "white",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Create User
-        </button>
-      </form>
-
-      {message && <p style={{ marginBottom: "20px" }}>{message}</p>}
-
-      <h2>User List</h2>
-
-      {loadingUsers ? (
-        <p>Loading users...</p>
-      ) : users.length === 0 ? (
-        <p>No users found.</p>
-      ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              background: "white",
-              color: "black",
-              borderRadius: "8px",
-              overflow: "hidden",
-            }}
-          >
-            <thead>
-              <tr style={{ background: "#e5e7eb" }}>
-                <th style={{ padding: "12px", textAlign: "left" }}>ID</th>
-                <th style={{ padding: "12px", textAlign: "left" }}>Full Name</th>
-                <th style={{ padding: "12px", textAlign: "left" }}>Email</th>
-                <th style={{ padding: "12px", textAlign: "left" }}>Current Role</th>
-                <th style={{ padding: "12px", textAlign: "left" }}>Change Role</th>
-                <th style={{ padding: "12px", textAlign: "left" }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} style={{ borderTop: "1px solid #ddd" }}>
-                  <td style={{ padding: "12px" }}>{user.id}</td>
-                  <td style={{ padding: "12px" }}>{user.fullName}</td>
-                  <td style={{ padding: "12px" }}>{user.email}</td>
-                  <td style={{ padding: "12px" }}>{user.role}</td>
-                  <td style={{ padding: "12px" }}>
-                    <select
-                      value={user.selectedRole}
-                      onChange={(e) =>
-                        handleRoleSelectChange(user.id, e.target.value)
-                      }
-                      style={{
-                        padding: "8px",
-                        borderRadius: "6px",
-                        border: "1px solid #ccc",
-                      }}
-                    >
-                      <option value="STUDENT">STUDENT</option>
-                      <option value="TEACHER">TEACHER</option>
-                    </select>
-                  </td>
-                  <td style={{ padding: "12px" }}>
-                    <button
-                      onClick={() =>
-                        handleUpdateRole(user.id, user.selectedRole)
-                      }
-                      disabled={updatingUserId === user.id}
-                      style={{
-                        padding: "8px 14px",
-                        border: "none",
-                        borderRadius: "6px",
-                        background: "#16a34a",
-                        color: "white",
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                        opacity: updatingUserId === user.id ? 0.7 : 1,
-                      }}
-                    >
-                      {updatingUserId === user.id ? "Updating..." : "Update"}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="admin-page">
+      <div className="admin-header">
+        <div>
+          <h1>Admin Page</h1>
+          <p>Logged in as: {email}</p>
+          <p>Roles: {roles.join(", ")}</p>
         </div>
-      )}
+
+        <button className="admin-logout-button" onClick={onLogout}>
+          Logout
+        </button>
+      </div>
+
+      <section className="admin-section">
+        <h2>Create User</h2>
+
+        <form className="admin-create-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Full name"
+            value={form.fullName}
+            onChange={handleChange}
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+          />
+
+          <select name="role" value={form.role} onChange={handleChange}>
+            <option value="STUDENT">STUDENT</option>
+            <option value="TEACHER">TEACHER</option>
+          </select>
+
+          <button type="submit">Create User</button>
+        </form>
+      </section>
+
+      {message && <p className="admin-message">{message}</p>}
+
+      <section className="admin-section">
+        <h2>User List</h2>
+
+        {loadingUsers ? (
+          <p>Loading users...</p>
+        ) : users.length === 0 ? (
+          <p>No users found.</p>
+        ) : (
+          <div className="admin-table-wrapper">
+            <table className="admin-users-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Current Role</th>
+                  <th>Change Role</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.fullName}</td>
+                    <td>{user.email}</td>
+                    <td>{user.role}</td>
+                    <td>
+                      <select
+                        value={user.selectedRole}
+                        onChange={(e) =>
+                          handleRoleSelectChange(user.id, e.target.value)
+                        }
+                      >
+                        <option value="STUDENT">STUDENT</option>
+                        <option value="TEACHER">TEACHER</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button
+                        className="admin-update-role-button"
+                        onClick={() =>
+                          handleUpdateRole(user.id, user.selectedRole)
+                        }
+                        disabled={updatingUserId === user.id}
+                      >
+                        {updatingUserId === user.id ? "Updating..." : "Update"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
